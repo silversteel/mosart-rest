@@ -44,6 +44,12 @@ Route
 		Route.get('comment/:id', 'CommentController.show')
 		Route.patch('comment/:id', 'CommentController.update').middleware('auth')
 		Route.delete('comment/:id', 'CommentController.destroy').middleware('auth')
+
+		Route.post('follow/:user_id', 'UserController.follow').middleware('auth')
+		Route.delete('unfollow/:user_id', 'UserController.unfollow').middleware('auth')
+
+		Route.post('follow/:post_id', 'UserController.favorite').middleware('auth')
+		Route.delete('unfollow/:post_id', 'UserController.unfavorite').middleware('auth')
 	})
 	.prefix('api/v1')
 

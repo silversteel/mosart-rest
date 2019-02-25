@@ -1,16 +1,26 @@
 'use strict'
 
 const User = use('App/Models/User')
+const Follow = use('App/Models/Follow')
+const Favorite = use('App/Models/Favorite')
 
 class UserController {
 	async show({ auth, response, params }) {
 		const { id } = params
 		try {
 			const user = await auth.getUser()
+			const followers = await Follow.getFollowers(user.id)
+			const following = await Follow.getFollowing(user.id)
+
 			if (id != user.id) {
 				throw { message: 'cannot access another user!' }
 			}
-			return user
+
+			return {
+				...user.toJSON(),
+				followers,
+				following
+			}
 		} catch(e) {
 			return response.status(500).send({
 				status: 'failed',
@@ -57,6 +67,62 @@ class UserController {
 			})
 		}
 	}
+
+	async follow({ auth, response, params }) {
+		const { user_id } = params
+		try {
+			const user = await auth.getUser()
+			return await Follow.create({ user_lead_id: user_id, user_follow_id: user.id})
+		} catch(e) {
+			return response.status(e.status).send({
+				status: 'failed',
+				message: e.message
+			})
+		}
+	}
+
+	async unfollow({ auth, response, params }) {
+		const { user_id } = params
+		try {
+			const user = await auth.getUser()
+			const follow = await Follow.query().where('user_lead_id', user_id).where('user_follow_id', user.id).fetch()
+			await follow.delete()
+			return follow
+		} catch(e) {
+			return response.status(e.status).send({
+				status: 'failed',
+				message: e.message
+			})
+		}
+	}
+
+	async favorite({ auth, response, params }) {
+		const { post_id } = params
+		try {
+			const user = await auth.getUser()
+			return await Favorite.create({ post_id, user_id: user.id })
+		} catch(e) {
+			return response.status(e.status).send({
+				status: 'failed',
+				message: e.message
+			})
+		}
+	}
+
+	async unfavorite({ auth, response, params }) {
+		const { post_id } = params
+		try {
+			const user = await auth.getUser()
+			const favorite = await Favorite.query().where('post_id', post_id).where('user_id', user.id).fetch()
+			return await favorite.delete()
+		} catch(e) {
+			return response.status(e.status).send({
+				status: 'failed',
+				message: e.message
+			})
+		}
+	}
+
 }
 
 module.exports = UserController

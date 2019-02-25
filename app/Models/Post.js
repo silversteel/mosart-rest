@@ -15,15 +15,6 @@ class Post extends Model {
 	tags() {
 		return this.hasMany('App/Models/Tag')
 	}
-
-	static getPostWithAuthor(id){
-		return this.query()
-			.select([''])
-			.innerJoin('users', 'posts.user_id', 'users.id')
-			.innerJoin('profiles', 'users.id', 'profiles.user_id')
-			.where('id', id)
-			.fetch()
-	}
 }
 
 module.exports = Post

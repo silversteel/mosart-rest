@@ -5,6 +5,10 @@ const Model = use('Model')
 
 class Follow extends Model {
 
+	users() {
+		return this.hasMany('App/Models/User', 'user_lead_id', 'id')
+	}
+
 	static getFollowers(user_id) {
 		return this.query()
 			.select(['profiles.name', 'profiles.profile_image'])

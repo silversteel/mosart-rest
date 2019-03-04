@@ -12,7 +12,8 @@ class Comment extends Model {
 		return this.query()
 			.select([
 				'comments.id', 
-				'users.id as user_id', 
+				'users.id as user_id',
+				'profiles.profile_image', 
 				'profiles.name as name', 
 				'comments.content', 
 				'comments.created_at', 

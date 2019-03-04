@@ -29,6 +29,7 @@ Route
 		Route.patch('profile/:id', 'ProfileController.update').middleware('auth')
 
 		Route.get('posts', 'PostController.index')
+		Route.get('followingPosts', 'PostController.getFollowingPosts').middleware('auth')
 		Route.get('post/:id', 'PostController.show')
 		Route.post('post', 'PostController.store').middleware('auth')
 		Route.patch('post/:id', 'PostController.update').middleware('auth')
@@ -48,8 +49,14 @@ Route
 		Route.post('follow/:user_id', 'UserController.follow').middleware('auth')
 		Route.delete('unfollow/:user_id', 'UserController.unfollow').middleware('auth')
 
-		Route.post('follow/:post_id', 'UserController.favorite').middleware('auth')
-		Route.delete('unfollow/:post_id', 'UserController.unfavorite').middleware('auth')
+		Route.post('favorite/:post_id', 'UserController.favorite').middleware('auth')
+		Route.delete('unfavorite/:post_id', 'UserController.unfavorite').middleware('auth')
+
+		Route.post('upload', 'FileController.store').middleware('auth')
+		Route.delete('file/:filename', 'FileController.destroy').middleware('auth')
+		
 	})
 	.prefix('api/v1')
 
+
+Route.get('file/:filename', 'FileController.show')

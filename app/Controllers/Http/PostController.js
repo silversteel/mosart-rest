@@ -6,6 +6,8 @@
 
 const Post = use('App/Models/Post')
 const Comment = use('App/Models/Comment')
+const Favorite = use('App/Models/Favorite')
+const Follow = use('App/Models/Follow')
 
 /**
  * Resourceful controller for interacting with posts
@@ -22,7 +24,8 @@ class PostController {
    */
   async index ({ request, response }) {
     try {
-      return await Post.query().with('users').with('tags').fetch()
+      const posts = await Post.query().with('users', (builder) => builder.setVisible(['']).with('profiles', (builder) => builder.setVisible(['user_id', 'name', 'profile_image']))).withCount('comments').withCount('favorites').fetch()
+      return posts.toJSON()
     } catch(e) {
       return response.status(e.status).send({
         status: 'failed',
@@ -62,21 +65,59 @@ class PostController {
    */
   async show ({ params, request, response }) {
     const { id } =  params
+    const { user_id } = request.get()
     try {
+      let isFavorite = [{total:0}]
       const post = await Post.findOrFail(id)
       const user = await post.users().fetch()
-      const author = await user.profiles().setVisible(['name']).fetch()
+      const author = await user.profiles().setVisible(['name', 'profile_image']).fetch()
       const tags = await post.tags().fetch()
+      const favorites = await Favorite.query().where('post_id', post.id).count('* as total')
       const comments = await Comment.getCommentsByPost(id)
+
+      if (user_id) {
+        isFavorite = await Favorite.query().where('post_id', post.id).where('user_id', user_id).count('* as total')
+      }
+      
       return {
         ...post.toJSON(),
         tags,
         author,
-        comments
+        comments,
+        favorites: favorites[0].total,
+        isFavorite: isFavorite[0].total
       }
     } catch(e) {
-      return response.status(e.status).send({
+      return response.send({
         status: 'failed',
+        message: e.message
+      })
+    }
+  }
+
+  async getFollowingPosts({ auth, request, response }) {
+    try {
+      const user = await auth.getUser()
+      const follows = await Follow.query().setVisible(['']).with('users', (builder) => {
+        builder.setVisible(['']).with('posts', (builder) => {
+          builder.with('users', (builder) => {
+            builder.setVisible(['']).with('profiles', (builder) => {
+              builder.setVisible(['user_id', 'name', 'profile_image'])
+            })
+          }).withCount('comments').withCount('favorites')
+        })
+      }).where('user_follow_id', user.id).fetch()
+
+      let posts = []
+      const data = follows.toJSON()
+
+      for(let i=0; i < data.length; i++) {
+        posts.push(...data[i].users[0].posts)
+      }
+
+      return posts
+    } catch(e){
+      response.send({
         message: e.message
       })
     }

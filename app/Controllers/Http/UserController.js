@@ -9,6 +9,8 @@ class UserController {
 		const { id } = params
 		try {
 			const user = await auth.getUser()
+			const profile = await user.profiles().fetch()
+			const posts = await user.posts().fetch()
 			const followers = await Follow.getFollowers(user.id)
 			const following = await Follow.getFollowing(user.id)
 
@@ -18,6 +20,8 @@ class UserController {
 
 			return {
 				...user.toJSON(),
+				profile,
+				posts,
 				followers,
 				following
 			}
@@ -113,10 +117,9 @@ class UserController {
 		const { post_id } = params
 		try {
 			const user = await auth.getUser()
-			const favorite = await Favorite.query().where('post_id', post_id).where('user_id', user.id).fetch()
-			return await favorite.delete()
+			return await Favorite.query().where('post_id', post_id).where('user_id', user.id).delete()
 		} catch(e) {
-			return response.status(e.status).send({
+			return response.status(500).send({
 				status: 'failed',
 				message: e.message
 			})

@@ -14,6 +14,7 @@ class AuthController {
 				access
 			}
 		} catch(e) {
+			console.log(e.message)
 			return response.status(500).send({
 				status: 'failed',
 				message: e.message
@@ -31,6 +32,7 @@ class AuthController {
 				status: 'success'
 			}
 		} catch(e) {
+			console.log(e.message)
 			return response.status(500).send({
 				status: 'failed',
 				message: e.message

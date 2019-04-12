@@ -7,10 +7,7 @@ class TagSchema extends Schema {
   up () {
     this.create('tags', (table) => {
       table.increments()
-      table.integer('post_id', 10).unsigned().notNullable().references('id').inTable('posts')
-      table.integer('user_id', 10).unsigned().notNullable().references('id').inTable('users')
-      table.string('label', 10).notNullable()
-      table.timestamps()
+      table.string('label', 20).notNullable()
     })
   }
 

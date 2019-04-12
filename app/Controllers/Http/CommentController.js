@@ -25,6 +25,7 @@ class CommentController {
       const user = await auth.getUser()
       return await Comment.create({ user_id: user.id, post_id, content })
     } catch(e) {
+      console.log(e.message)
       return response.status(e.status).send({
         status: 'failed',
         message: e.message
@@ -52,6 +53,7 @@ class CommentController {
         profile
       }
     } catch(e) {
+      console.log(e.message)
       return response.status(e.status).send({
         status: 'failed',
         message: e.message
@@ -77,6 +79,7 @@ class CommentController {
       await comment.save()
       return comment
     } catch(e) {
+      console.log(e.message)
       return response.status(e.status).send({
         status: 'failed',
         message: e.message
@@ -99,6 +102,7 @@ class CommentController {
       await comment.delete()
       return comment
     } catch(e) {
+      console.log(e.message)
       return response.status(e.status).send({
         status: 'failed',
         message: e.message

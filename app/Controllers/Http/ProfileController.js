@@ -26,6 +26,7 @@ class ProfileController {
       const profile = await Profile.findOrFail(id)
       return profile
     } catch(e) {
+      console.log(e.message)
       switch(e.code){
         case 'E_MISSING_DATABASE_ROW':
           return response.status(e.status).send({
@@ -36,7 +37,7 @@ class ProfileController {
         default:
           return response.status(e.status).send({
             status: 'failed',
-            message: e.message
+            message: 'Error'
           }) 
           break
       }
@@ -53,13 +54,14 @@ class ProfileController {
    */
   async update ({ auth, params, request, response }) {
     const { id } = params
-    const { name, bio, location, website } = request.post()
+    const { name, bio, location, website, image_url } = request.post()
     try {
       const user = await auth.getUser()
       if(user.id != id){
         throw { message: 'you cant access another user!'}
       }
       const profile = await user.profiles().fetch()
+      profile.image_url = image_url
       profile.name = name
       profile.bio = bio
       profile.location = location
@@ -68,9 +70,10 @@ class ProfileController {
 
       return profile
     } catch(e) {
+      console.log(e.message)
       return response.status(e.status).send({
         status: 'failed',
-        message: e.message
+        message: 'Error'
       })
     }
   }

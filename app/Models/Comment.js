@@ -4,8 +4,13 @@
 const Model = use('Model')
 
 class Comment extends Model {
+
 	users() {
 		return this.belongsTo('App/Models/User', 'user_id', 'id')
+	}
+
+	profiles() {
+		return this.manyThrough('App/Models/User', 'profiles', 'user_id', 'id')
 	}
 
 	static getCommentsByPost(post_id) {

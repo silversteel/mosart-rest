@@ -18,9 +18,9 @@ class FileController {
     const { filename } = params
 
     try {
-      const file = await File.findByOrFail('path', filename)
+      const file = await File.findByOrFail('image_url', filename)
 
-      return response.download(Helpers.tmpPath('uploads/'+file.path))
+      return response.download(Helpers.tmpPath('uploads/'+file.image_url))
     } catch(e) {
       return response.status(e.status).send({
         status: 'failed',
@@ -40,7 +40,6 @@ class FileController {
   async store ({ auth, request, response }) {
     const picture = request.file('picture')
     const filename = new Date().getTime()+'.'+picture.subtype
-    
     try {
       await auth.check()
 
@@ -49,16 +48,17 @@ class FileController {
         overwrite: true
       })
 
-      const uploaded_file = await File.create({ path: filename })
+      const uploaded_file = await File.create({ image_url: filename })
 
       if(!picture.moved()){
         throw { message: picture.error() }
       }
 
       return {
-        image: 'http://192.168.43.106:3333/file/'+uploaded_file.path
+        image: 'http://192.168.43.106:3333/file/'+uploaded_file.image_url
       }
     } catch(e) {
+      console.log(e.message)
       return response.status(200).send({
         status: 'failed',
         message: e.message
@@ -78,10 +78,10 @@ class FileController {
     const { filename } = params
     try {
       await auth.check()
-      const uploaded_file = await File.findByOrFail('path', filename)
+      const uploaded_file = await File.findByOrFail('image_url', filename)
       //const isExist = await fs.access(Helpers.tmpPath('uploads/'+uploaded_file.path))
 
-      await fs.unlink(Helpers.tmpPath('uploads/'+uploaded_file.path))
+      await fs.unlink(Helpers.tmpPath('uploads/'+uploaded_file.image_url))
       await uploaded_file.delete()
       return uploaded_file
     } catch(e) {

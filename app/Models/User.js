@@ -39,6 +39,10 @@ class User extends Model {
     return this.hasMany('App/Models/Token')
   }
 
+  following() {
+    return this.hasMany('App/Models/Follow', 'id', 'lead_user_id')
+  }
+
   profiles() {
     return this.hasOne('App/Models/Profile', 'id', 'user_id')
   }

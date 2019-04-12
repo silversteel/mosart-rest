@@ -22,6 +22,7 @@ Route
 		Route.post('register', 'AuthController.register').middleware(['guest'])
 
 		Route.get('user/:id', 'UserController.show').middleware('auth')
+		Route.get('user/other/:id', 'UserController.showOther')
 		Route.patch('user/:id', 'UserController.update').middleware('auth')
 		Route.delete('user/:id', 'UserController.destroy').middleware('auth')
 
@@ -29,7 +30,7 @@ Route
 		Route.patch('profile/:id', 'ProfileController.update').middleware('auth')
 
 		Route.get('posts', 'PostController.index')
-		Route.get('followingPosts', 'PostController.getFollowingPosts').middleware('auth')
+		Route.get('posts/following', 'PostController.getFollowingPosts').middleware('auth')
 		Route.get('post/:id', 'PostController.show')
 		Route.post('post', 'PostController.store').middleware('auth')
 		Route.patch('post/:id', 'PostController.update').middleware('auth')

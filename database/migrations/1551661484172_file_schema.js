@@ -7,7 +7,7 @@ class FileSchema extends Schema {
   up () {
     this.create('files', (table) => {
       table.increments()
-      table.string('image_uri', 255).notNullable()
+      table.string('image_url', 255).notNullable()
       table.timestamps()
     })
   }

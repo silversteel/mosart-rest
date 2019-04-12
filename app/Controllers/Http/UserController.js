@@ -11,8 +11,8 @@ class UserController {
 			const user = await auth.getUser()
 			const profile = await user.profiles().fetch()
 			const posts = await user.posts().fetch()
-			const followers = await Follow.getFollowers(user.id)
-			const following = await Follow.getFollowing(user.id)
+			const followers = []
+			const following = []
 
 			if (id != user.id) {
 				throw { message: 'cannot access another user!' }
@@ -26,9 +26,35 @@ class UserController {
 				following
 			}
 		} catch(e) {
+			console.log(e.message)
 			return response.status(500).send({
 				status: 'failed',
-				message: e.message
+				message: 'Error'
+			})
+		}
+	}
+
+	async showOther({ response, params }) {
+		const { id } = params
+		try {
+			const user = await User.findOrFail(id)
+			const profile = await user.profiles().fetch()
+			const posts = await user.posts().fetch()
+			const followers = []
+			const following = []
+
+			return {
+				...user.toJSON(),
+				profile,
+				posts,
+				followers,
+				following
+			}
+		} catch(e) {
+			console.log(e.message)
+			return response.status(500).send({
+				status: 'failed',
+				message: 'Error'
 			})
 		}
 	}
@@ -47,9 +73,10 @@ class UserController {
 			await user.save()
 			return user
 		} catch(e) {
+			console.log(e.message)
 			return response.status(500).send({
 				status: 'failed',
-				message: e.message
+				message: 'Error'
 			})
 		}
 	}
@@ -65,9 +92,10 @@ class UserController {
 			await user.delete()
 			return user
 		} catch(e) {
+			console.log(e.message)
 			return response.status(500).send({
 				status: 'failed',
-				message: e.message
+				message: 'Error'
 			})
 		}
 	}
@@ -78,9 +106,10 @@ class UserController {
 			const user = await auth.getUser()
 			return await Follow.create({ user_lead_id: user_id, user_follow_id: user.id})
 		} catch(e) {
+			console.log(e.message)
 			return response.status(e.status).send({
 				status: 'failed',
-				message: e.message
+				message: 'Error'
 			})
 		}
 	}
@@ -93,9 +122,10 @@ class UserController {
 			await follow.delete()
 			return follow
 		} catch(e) {
+			console.log(e.message)
 			return response.status(e.status).send({
 				status: 'failed',
-				message: e.message
+				message: 'Error'
 			})
 		}
 	}
@@ -106,9 +136,10 @@ class UserController {
 			const user = await auth.getUser()
 			return await Favorite.create({ post_id, user_id: user.id })
 		} catch(e) {
+			console.log(e.message)
 			return response.status(e.status).send({
 				status: 'failed',
-				message: e.message
+				message: 'Error'
 			})
 		}
 	}
@@ -119,9 +150,10 @@ class UserController {
 			const user = await auth.getUser()
 			return await Favorite.query().where('post_id', post_id).where('user_id', user.id).delete()
 		} catch(e) {
+			console.log(e.message)
 			return response.status(500).send({
 				status: 'failed',
-				message: e.message
+				message: 'Error'
 			})
 		}
 	}

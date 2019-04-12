@@ -1,28 +1,12 @@
-# Adonis API application
+# Mosart REST API
 
-This is the boilerplate for creating an API server in AdonisJs, it comes pre-configured with.
+Mosart REST API made with AdonisJS
 
-1. Bodyparser
-2. Authentication
-3. CORS
-4. Lucid ORM
-5. Migrations and seeds
+### How to start
 
-## Setup
-
-Use the adonis command to install the blueprint
-
-```bash
-adonis new yardstick --api-only
-```
-
-or manually clone the repo and then run `npm install`.
-
-
-### Migrations
-
-Run the following command to run startup migrations.
+Run the following command to start api
 
 ```js
 adonis migration:run
+adonis serve --dev
 ```
